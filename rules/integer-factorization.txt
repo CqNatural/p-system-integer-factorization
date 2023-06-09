@@ -1,0 +1,113 @@
+Membrane Compute {
+    // 1. Divide Compute Membrane
+    Rule SCr1 = a -> divide({b}, {c r^2});   
+    Rule SCr2 = d -> q;                      
+    Rule SCr3 = b -> a d;                    
+    Rule SCr4 = q -> z | @c & @r;            
+    //Rule Cr1 = c -> c ComputingFlag | @c & @r & @z & !ComputingFlag;   
+    // 2. Create Sub Membranes
+    Object ReleaseFlag;                  
+    Rule CSMr1 = c z -> c X j Delegate:delegate{s};                     // T1
+	Rule CSMr2 = X -> (y, in all) | !z;                                 // T2 
+    Rule CSMr3 = ReleaseFlag -> (DissolveFlag, in all) | !z & !X & @j;  // T3  
+    // 3. Calculate Modulo
+    Rule CMr1 = v c -> p f, 1;                                          // L1 begin
+    //Rule CMr2 = v^15 -> (f^15,here), 2;
+    Rule CMr3 = v -> i f, 3;
+
+    Rule CMr4 = f -> (t, in all) | @i, 1;                               // T7 
+    Rule CMr5 = p -> r^2 c | @i, 1;               
+    Rule CMr6 = i -> ;                            
+
+    Rule CMr7 = p -> w (k, out) (k, in all), 2;     
+    Rule CMr8 = k w -> h, 0;                        
+    // 4. Calculate Prime Fraction
+
+    Rule CPFar1 = r^2 -> R | @h;                                        // R = r/2  
+    Rule CPFar2 = R h -> cflag | !cflag;        
+    Rule CPFar3 = j cflag -> cflag SubCompute:subCompute{T};
+    Rule CPFar4 = R cflag -> rflag | !j;
+    Rule CPFar5 = V -> P (T, in all) | @rflag;
+    Rule CPFar6 = P rflag -> cflag;
+    //Rule CPFar7 = V -> F (k, in all) | !rflag & !R;    
+    Rule CPFbr1 = cflag -> GCDFlag
+                           CalculateFactor:cf1{I}
+                           CalculateFactor:cf2{D} | !R & !r, 1;
+    Rule CPFbr2 = V -> (V, in all) | @GCDFlag, 2;
+    Rule CPFbr3 = N -> (N, in all) | @GCDFlag, 2;
+    Rule CPFbr4 = GCDFlag -> (GCDFlag, in all) | !V & !N, 3;    
+    Rule CPFfr1 = DissolveComputeFlag -> dissolve(all);
+
+    Rule EFr1 = f -> (DissolveAllCompute, out) | @EndFlag;
+    Rule EFr2 = DissolveAllCompute -> dissolve(all) | !EndFlag;    
+    Rule EFr3 = DissolveAllCompute -> dissolve | @EndFlag;     
+}
+Membrane Delegate {
+    Rule Dr1 = s y -> s SubCompute:subCompute{};                        // T3
+    Rule Dr2 = s DissolveFlag -> (t,in all) dissolve | !y;              // T3
+}
+Membrane SubCompute {
+    Rule Sr1 = t -> (v, out);       // T8
+                                    // Trt to back to L1
+    Rule Sr3 = T -> (V, out);
+    Rule Sr2 = k -> dissolve, 2;    
+    Rule Sr4 = GCDFlag -> dissolve, 2;  
+}
+
+Membrane CalculateFactor {
+    Rule ddbr2 = I -> V, 1;
+    Rule ddbr3 = D V ->, 1;
+    Rule ddbr4 = GCDFlag -> Give GCD:g1{}, 2;   
+    Rule ddbr5 = V -> (m, in all) | @Give;
+    Rule ddbr6 = N -> (n, in all) | @Give;
+    
+    Rule ddbr7 = x Give -> IsOne;
+    Rule ddbr8 = IsOne -> (DissolveComputeFlag, out) | !x, 1;
+    Rule ddbr9 = IsOne -> x (EndFlag, out), 2;   
+}
+
+Membrane GCD{
+
+    Object c,t;
+    Rule r1=m n->g ,1;
+    Rule r2=m->a (a,in all) | @g, 2;
+    Rule r3=n->b (a,in all) | @g, 2;
+    Rule r4=g->a b (a b Num,in all) , 3;
+    Membrane A a1{
+        Object c;
+    }
+
+    Rule DGr1 = x -> (x,out);
+    Rule DGr2 = z -> dissolve(all) | !x;
+}
+Membrane A{
+    Object CreateSubMem;
+    Rule r1=a b->x ,1;
+    Rule r2=c->y | @x,1;
+    Rule r3=a y->a d ,2;
+    Rule r4=x->b | @d ,3;
+    Rule r5=d->c ,4;
+    Rule r6=b y->b e g ,2;
+    Rule r13=CreateSubMem Num -> A:a{} | @b ,3;
+    Rule r14=Num -> (Num, in all) | !CreateSubMem;
+    Rule r7=g->h ,3;
+    Rule r8=x->(b,in all) | @h, 4;
+    Rule r9=b->(a,in all) | @h, 4;
+    Rule r10=h->(c,in all) | @h, 5;
+    Rule r11=y->z e ,3;
+    Rule r12=x ->(z x,out) | @z, 4;
+}
+
+Environment{
+
+    // Environment Rules
+    Rule Er1 = k -> (k, in all), 1;
+    Rule Er2 = DissolveAllCompute -> (DissolveAllCompute, in all), 1;
+
+	Membrane Compute compute {        
+        Object a,d^2;        
+        Object N^15;                        // `Object N^{{number}};` MEANS N=15 HERE.
+        Rule CMr2 = v^15 -> (f^15,here), 2; // `v^{{number}}` and `f^{{number}}` USED FOR A CONVERT (IN THIS INSTANCE IT IS FOR N=15).
+	}
+}
+
